@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="memberMapper">
+
+	<resultMap type="Member" id="memberResultSet">
+		<result column="user_no" property="userNo"/>
+		<result column="user_id" property="userId"/>
+		<result column="user_pwd" property="userPwd"/>
+		<result column="user_name" property="userName"/>
+		<result column="user_nick" property="userNick"/>
+		<result column="email" property="email"/>
+		<result column="profile" property="profile"/>
+		<result column="gender" property="gender"/>
+		<result column="social" property="social"/>
+		<result column="enroll_date" property="enrollDate"/>
+		<result column="token" property="token"/>
+		<result column="status" property="status"/>
+		<result column="connect_status" property="connectStatus"/>
+	</resultMap>
+
+	<!-- 회원가입시 아이디 체크용 -->
+	<select id="idCheck" resultType="_int" parameterType="string">
+		select 
+		      count(*)
+		  from tb_member
+		  where user_id=#{id}
+	</select>	
+	
+	<!-- 회원가입 버튼시 실행될 쿼리문 -->
+	<insert id="insertMember">
+		insert 
+		    into tb_member
+		    (	user_no
+		      , user_id
+		      , user_pwd
+		      , user_name
+		      , gender
+		      , email
+		      , profile
+		      , social
+		    )
+		    values
+		    (
+		    	seq_member.nextval
+		      , #{userId}
+		      , #{userPwd}
+		      , #{userName}
+		      , #{gender}
+		      , #{email}  
+		      , #{profile}
+		      , #{social}
+		    )
+	</insert>
+	
+	<select id="selectMember" resultMap="memberResultSet">
+		select 
+		        user_no
+		      , user_id
+		      , user_pwd
+		      , user_name
+		      , user_nick
+		      , email
+		      , profile
+		      , gender
+		      , social
+		      , enroll_date
+		      , token
+		      , status
+		  from tb_member
+		  where user_id = #{userId}
+	</select>
+	
+	<select id="findKaKao" parameterType="java.util.HashMap" resultMap="memberResultSet">
+		select
+				user_no
+		      , user_id
+		      , user_pwd
+		      , user_name
+		      , user_nick
+		      , email
+		      , profile
+		      , gender
+		      , social
+		      , enroll_date
+		      , token
+		      , status
+		   from tb_member
+		   where user_id = #{email}
+		   	 and status = 'Y'
+	</select>
+	
+	<insert id="insertKaKao" parameterType="java.util.HashMap">
+		insert 
+		    into tb_member
+		    (	user_no
+		      , user_id
+		      , user_pwd
+		      , user_name
+		      , gender
+		      , email
+		      , profile
+		      , social
+		    )
+		    values
+		    (
+		    	seq_member.nextval
+		      , #{email}
+		      , null
+		      , #{nickname}
+		      , null
+		      , #{email}
+		      , #{profile_image}
+		      , 'K'
+		    )
+	</insert>
+	
+	<select id="resetPwd" resultType="_int">
+		select 
+			    count(*) as "count"
+		  from tb_member
+		 where user_id = #{userId}
+		   and email = #{email}
+	</select>
+	<update id="myPageUpdate">
+		update
+			tb_member
+		 set user_name = #{userName},
+		 	 email = #{email},
+		 	 profile = #{profile},
+		 	 token = #{token}
+		 where user_no = #{userNo}
+	</update>
+	<update id="memberDelete">
+		update
+			tb_member
+		set status = 'N',
+		    user_id = seq_memberDelete.nextval
+		where user_no = #{userNo}	
+	</update>
+	
+	<update id="enrollToken">
+		update tb_member
+		   set token = #{token}
+		 where user_no = #{userNo} 
+	</update>
+	
+	<update id="updateConnection">
+		update tb_member
+		   set connect_status = 'Y'
+		 where user_no = #{no}
+	</update>
+	
+	<update id="updatePwd">
+		update tb_member
+		   set user_pwd = #{userPwd}
+		 where user_id = #{userId}
+	</update>
+	
+</mapper>

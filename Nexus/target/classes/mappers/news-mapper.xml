@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="newsMapper">
+
+	<resultMap type="News" id="newsResultSet">
+		<result column="news_no" property="newsNo"/>
+		<result column="user_name" property="userNo"/>
+		<result column="news_title" property="newsTitle"/>
+		<result column="news_content" property="newsContent"/>
+		<result column="CREATE_DATE" property="createDate"/>
+		<result column="thumbnail" property="thumbnail"/>
+		<result column="profile" property="profile"/>
+		<result column="likeCount" property="likeCount"/>
+	</resultMap>
+	
+	<resultMap type="NewsReply" id="newsReplyResultSet">
+		<result column="news_no" property="newsNo"/>
+		<result column="user_name" property="commentWriter"/>
+		<result column="comment_content" property="commentContent"/>
+		<result column="comment_date" property="commentDate"/>
+		<result column="status" property="status"/>
+		<result column="profile" property="profile"/>
+	</resultMap>
+	
+	<!-- 1. new일때 , popular일때, null일 때 그외 -->
+	<select id="selectList" resultMap="newsResultSet">
+		select * from(
+			select
+			         n.news_no
+			       , m.user_name 
+			       , n.news_title
+			       , DBMS_LOB.SUBSTR(n.news_content, 2000, 1) as "news_content"
+                   , to_char(n.create_date,'YYYY-MM-DD') "CREATE_DATE"
+			       , thumbnail
+			       , profile
+                   , count(CASE WHEN z.status = 'Y' THEN 1 ELSE NULL END) as "likeCount"
+			 from tb_news n
+			 join tb_member m on(n.user_no = m.user_no)
+             left join tb_news_zzim z on(n.news_no = z.news_no)
+             where n.status='Y'
+             <if test='text != "new" and text != "popular" and text !=null'>
+	             and m.user_no = #{state}             
+             </if>
+             group by n.news_no, m.user_name, n.news_title, DBMS_LOB.SUBSTR(news_content, 2000, 1),to_char(create_date,'YYYY-MM-DD'), thumbnail, profile
+             <if test='state == "new" or state == null or state == "my"'>
+	             order by news_no desc
+             </if>
+             <if test='state == "popular"'>
+             	order by 8 desc
+             </if>
+            )
+			 where rownum BETWEEN 1 and 12
+	</select>
+	
+	<select id="ajaxSelectList" resultMap="newsResultSet">
+			select
+			         n.news_no
+			       , m.user_name 
+			       , n.news_title
+			       , DBMS_LOB.SUBSTR(n.news_content, 1000, 1) as "news_content"
+                   , to_char(n.create_date,'YYYY-MM-DD') "CREATE_DATE"
+			       , thumbnail
+			       , profile
+                   , count(CASE WHEN z.status = 'Y' THEN 1 ELSE NULL END) as "likeCount"
+			 from tb_news n
+			 join tb_member m on(n.user_no = m.user_no)
+             left join tb_news_zzim z on(n.news_no = z.news_no)
+             where n.status='Y'
+             <if test='text != "new" and text != "popular" and text !=null'>
+	             and m.user_no = #{state}             
+             </if>
+             group by n.news_no, m.user_name, n.news_title, DBMS_LOB.SUBSTR(news_content, 1000, 1),to_char(create_date,'YYYY-MM-DD'), thumbnail, profile
+             <if test='state == "new" or state == null or state == "my"'>
+	             order by news_no desc
+             </if>
+             <if test='state == "popular"'>
+             	order by 8 desc
+             </if>
+			 
+	</select>
+	
+	<select id="selectrList" resultMap="newsReplyResultSet">
+		select 
+		        news_no
+		      , user_name
+		      , comment_content
+		      , to_char(comment_date,'YYYY.MM.DD HH24:MI:SS') "COMMENT_DATE"
+		      , profile
+		from tb_news_comments  nc
+		join tb_member on(user_no = comment_writer)
+		where nc.status = 'Y'
+        and news_no = #{nNo}
+        order by comment_date asc
+	</select>
+	
+	<insert id="newsReplyInsert">
+		insert 
+			into tb_news_comments
+			(
+				news_no
+			  , comment_writer
+			  , comment_content
+			)
+			values
+			(
+				#{newsNo}
+			  , #{commentWriter}
+			  , #{commentContent}
+			)
+	</insert>
+	
+	<insert id="insertNews">
+		insert
+		  into tb_news
+		  (
+		     news_no
+		   , user_no
+		   , news_title
+		   , news_content
+		   , thumbnail
+		  )
+		  values
+		  (
+		     seq_news.nextval
+		   , #{userNo}
+		   , #{newsTitle}
+		   , #{newsContent}
+		   , #{thumbnail}
+		  )
+	</insert>
+	
+	<select id="seletNews" resultMap="newsResultSet">
+		select 
+		         news_no
+		       , user_name
+		       , news_title
+		       , news_content
+		       , to_char(create_date,'YYYY-MM-DD') "create_date"
+		       , profile
+		  from tb_news n
+		  join tb_member using(user_no)
+		  where n.status = 'Y'
+		  and news_no =#{nNo}
+	</select>
+	
+	<update id="deleteNews">
+		update tb_news
+			set status = 'N'
+			where news_no = #{newsNo}
+	</update>
+	
+	<select id="countrList" resultType="_int">
+		select 
+			count(*) as "count"
+		  from tb_news_comments
+	     where news_no =#{nNo}
+			   and status= 'Y'
+	</select>
+	
+	<select id="likeCount" resultType="_int">
+		select count(*) as "count"
+			from tb_news_zzim
+			where news_no = #{newsNo}
+			and user_no = #{userNo}
+	</select>
+	
+	<select id="likeCount1" resultType="_int">
+		select count(*) as "count"
+			from tb_news_zzim
+			where news_no = #{newsNo}
+			and user_no = #{userNo}
+			and status = 'Y'
+	</select>
+	
+	
+	<insert id="insertLike">
+		insert 
+			  into tb_news_zzim
+			  (
+			     news_no
+			   , user_no
+			   , update_date
+			   , status
+			  )
+			  values
+			  (
+			      #{newsNo}
+			    , #{userNo}
+			    , sysdate
+			    , 'Y'
+			  )
+	</insert>
+	
+	<update id="updateLike">
+		  update tb_news_zzim
+			  set status = 'Y'
+			  where news_no = #{newsNo}
+			  and user_no =#{userNo}
+	</update>
+	
+	<select id="totaLikeCount" resultType="_int">
+		select count(*) as "count"
+			from tb_news_zzim
+			where news_no = #{newsNo}
+			and status = 'Y'
+	</select>
+	
+	
+	<update id="updateUnlike">
+		  update tb_news_zzim
+			  set status = 'N'
+			  where news_no = #{newsNo}
+			  and user_no =#{userNo}
+	</update>
+	
+	<update id="updateNews">
+		update tb_news
+		   set news_title = #{newsTitle},
+		       news_content = #{newsContent},
+		       update_date = sysdate,
+		       thumbnail = #{thumbnail}
+		  where news_no = #{newsNo}
+	</update>
+	
+	<select id="getNewsList" resultMap="newsResultSet">
+			select
+			         n.news_no
+			       , m.user_name 
+			       , n.news_title
+			       , DBMS_LOB.SUBSTR(n.news_content, 2000, 1) as "news_content"
+                   , to_char(n.create_date,'YYYY-MM-DD') "CREATE_DATE"
+			       , thumbnail
+			       , profile
+                   , count(CASE WHEN z.status = 'Y' THEN 1 ELSE NULL END) as "likeCount"
+			 from tb_news n
+			 join tb_member m on(n.user_no = m.user_no)
+             left join tb_news_zzim z on(n.news_no = z.news_no)
+             where n.status='Y'
+             group by n.news_no, m.user_name, n.news_title, DBMS_LOB.SUBSTR(news_content, 2000, 1),to_char(create_date,'YYYY-MM-DD'), thumbnail, profile
+             order by 5 desc, 8 desc
+	</select>
+	
+	<select id="selectHotNews" resultMap="newsResultSet">
+		select * from (
+        select
+			         n.news_no
+			       , n.news_title
+                   , to_char(n.create_date,'YYYY-MM-DD') "CREATE_DATE"
+                   , count(CASE WHEN z.status = 'Y' THEN 1 ELSE NULL END) as "likeCount"
+			 from tb_news n
+			 join tb_member m on(n.user_no = m.user_no)
+             left join tb_news_zzim z on(n.news_no = z.news_no)
+             where n.status='Y'
+             group by n.news_no, n.news_title, to_char(create_date,'YYYY-MM-DD')
+             order by 3 desc, 4 desc
+             )
+             where rownum = 1
+	</select>
+	
+	
+</mapper>
