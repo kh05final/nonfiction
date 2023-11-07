@@ -27,3 +27,6 @@ public class Calendar {
 	private String textColor;
 	private boolean allDay;
 }
+
+
+// 우왕 일정 관리 편하겠어용!

@@ -27,3 +27,6 @@ public class Friend {
 	private String blockI;
 	private String blockMe;
 }
+
+
+// 저랑 베프먹으실 분??? 
