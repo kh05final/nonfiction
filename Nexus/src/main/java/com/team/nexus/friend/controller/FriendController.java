@@ -20,6 +20,9 @@ public class FriendController {
 
 	@Autowired
 	private FriendService friendService;
+
+	// 죽빵 천사에게 죽빵 한번 맞아보실 분...? 
+
 	
 	@RequestMapping("friend.me")
 	public String friendPage(Model model, HttpSession session) {
