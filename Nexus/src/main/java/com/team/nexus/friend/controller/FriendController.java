@@ -22,7 +22,7 @@ public class FriendController {
 	private FriendService friendService;
 
 	// 죽빵 천사에게 죽빵 한번 맞아보실 분...? 
-
+	// ㄴ어멋! 저 호빵천사인데 저한테 한번...?
 	
 	@RequestMapping("friend.me")
 	public String friendPage(Model model, HttpSession session) {
