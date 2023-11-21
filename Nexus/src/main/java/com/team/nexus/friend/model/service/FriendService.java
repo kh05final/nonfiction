@@ -11,7 +11,9 @@ import com.team.nexus.friend.model.vo.Friend;
 
 @Service
 public class FriendService {
-
+	// 모두들 그동안 수고하셨습니다!!! 
+	// 강사님도 6개월동안 너무 너무 감사했어요ㅠㅠ ♥♥♥♥♥♥
+	
 	@Autowired
 	private FriendDao friendDao;
 	
