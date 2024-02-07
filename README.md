@@ -6,7 +6,9 @@
 
 
 ![header](https://capsule-render.vercel.app/api?type=waving&color=timeGradient&text=Welcome%20to%20NEXUS%20Project%20👋&animation=twinkling&fontSize=35&fontAlignY=40&fontAlign=70&height=250)
-
+<!--
+ Pull-Request를 새로 등록하기 위해서는 먼저 커밋을 해야합니다!
+-->
 
 # 프로젝트명 NEXUS
 
