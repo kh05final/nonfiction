@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 
 import com.team.nexus.friend.model.vo.Friend;
 
+
+// 와우 친구가 은근 까다롭네ㅠㅠㅠ
 @Repository
 public class FriendDao {
 

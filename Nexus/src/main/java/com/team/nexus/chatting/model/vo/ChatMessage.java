@@ -29,3 +29,7 @@ public class ChatMessage {
 	private String invite;
 	
 }
+
+
+// 모두들 6개월동안 수고하셨어요! 원하시는 결과 있기를....
+// 강사님도 너무 감사합니다. 덕분에 파이널도 무사히 마칠 수 있었어요 ♥♥♥♥♥♥♥
