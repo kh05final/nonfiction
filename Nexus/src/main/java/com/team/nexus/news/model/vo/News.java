@@ -23,3 +23,4 @@ public class News {
 	private String profile;
 	private int likeCount;
 }
+// news!! news!

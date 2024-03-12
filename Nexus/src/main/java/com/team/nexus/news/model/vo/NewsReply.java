@@ -18,3 +18,7 @@ public class NewsReply {
 	private String status;
 	private String profile;
 }
+
+
+
+// 뉴스 댓글댓글!!

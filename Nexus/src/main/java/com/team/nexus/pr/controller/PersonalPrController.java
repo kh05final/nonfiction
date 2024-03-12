@@ -29,6 +29,12 @@ import com.team.nexus.pr.model.vo.PageInfo;
 import com.team.nexus.pr.model.vo.Pagination;
 import com.team.nexus.pr.model.vo.PersonalPr;
 
+
+// 풀리퀘스트를 작성하려면 먼저 커밋을 해야합니다!
+
+
+
+
 @Controller
 public class PersonalPrController {
 	
@@ -122,7 +128,7 @@ public class PersonalPrController {
 	
 	
 	
-	
+	// 할룽!! 헤헤
 	
 	
 	
